@@ -72,9 +72,11 @@ $form[0].addEventListener('submit', function(event) {
         flavorShot: $('#flavorShot')[0].value,
         strengthLevel: $('#strengthLevel')[0].value
     };
+    
     orderList.push(order);
     console.log(order);
     makeOrderListItem(order);
+    $form[0].reset();
 });
 
 
