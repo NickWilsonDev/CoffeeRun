@@ -26,7 +26,6 @@ var makeOrderListItem = function (order) {
     
         var index = findByAttr(orderList, 'email', this.id);
         orderList.splice(index, 1);
-        //$(this).remove();
         $listElement.css("background-color","green");
         $listElement.off('click');
         window.setTimeout(function() {
@@ -34,7 +33,7 @@ var makeOrderListItem = function (order) {
                     $($listElement).remove();
                     }, 2000);
         $.ajax({
-            url: "http://dc-coffeerun.herokuapp.com/api/coffeeorders/" 
+            url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders/" 
                                             + order.emailAddress,
             type: 'DELETE',
         });
@@ -53,7 +52,7 @@ var populatePreviousOrders = function (orderList) {
 
 $(document).ready(function() {
     // AJAX on page load, grab orders from server
-    $.get("http://dc-coffeerun.herokuapp.com/api/coffeeorders", function (data) { 
+    $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders", function (data) { 
         console.log("Data fetched from server");
         orderList = []; 
         for (key in data) {
@@ -97,15 +96,13 @@ $form[0].addEventListener('submit', function(event) {
     console.log(order);
     makeOrderListItem(order);
     console.log(JSON.stringify(order));
-    $.post("http://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
+    $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
       console.log(resp)
     });
     $form[0].reset();
 });
 
-
-
-
+/* ---------------- Populate functionality ---------------- */
 
 orders = [
     {"strength":0,"flavor":"None","size":"tall","emailAddress":"person@email.com","coffee":"Coffee"}, 
@@ -128,7 +125,7 @@ $popBtn[0].addEventListener('click', function(event) {
         };
 
         console.log(order);
-        $.post("http://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
+        $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
             console.log(resp)
         });
     }
