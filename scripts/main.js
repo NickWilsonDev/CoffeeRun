@@ -2,18 +2,7 @@
 
 var orderList;
 
-
-var deleteRequest = function (element) {
-        //var index = findByAttr(orderList, 'email', this.id);
-        //orderList.splice(index, 1);
-        console.log("deleting");
-        $(element).remove();
-}
-
-
 var makeOrderListItem = function (order) {
-    console.log("-----------------");
-    console.log(order);
     var $listElement = $('<li>').addClass('list-group-item');
     $listElement.attr('id', order.emailAddress);
     $listElement.text(order.emailAddress + ' Order: ' 
@@ -23,26 +12,33 @@ var makeOrderListItem = function (order) {
                     + order.strength);
     // listener for removing
     $listElement.click( function(event) {
-    
-        var index = findByAttr(orderList, 'email', this.id);
+        console.log("inside element click handler " + this.id);
+        var index = findByAttr(orderList, 'emailAddress', this.id);
+        console.log(index);
+        var order = orderList[index];
         orderList.splice(index, 1);
         $listElement.css("background-color","green");
+
         $listElement.off('click');
-        window.setTimeout(function() {
-                    console.log("deleting");
-                    $($listElement).remove();
-                    }, 2000);
-        $.ajax({
-            url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders/" 
-                                            + order.emailAddress,
-            type: 'DELETE',
+        $listElement.on('click', function () {
+                console.log("inside inner handler " + this);
+                $listElement.css("background-color", "white");
+                clearTimeout(timer);
+                $listElement.off('click');
+        }); 
+        var timer = window.setTimeout(function(order) {
+                        console.log("deleting");
+                        $($listElement).remove();
+                        }, 2000);
+        $.ajax({url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders/" 
+                      + order.emailAddress, type: 'DELETE',
         });
-
     });
-
+    
+    //var orginalEvent = $listElement.data('events');
+    //console.log("events list :: " + originalEvent);
     $('#previousOrders').append($listElement);
 };
-
 
 var populatePreviousOrders = function (orderList) {
     for (var i = 0; i < orderList.length; i++) {
@@ -56,33 +52,30 @@ $(document).ready(function() {
         console.log("Data fetched from server");
         orderList = []; 
         for (key in data) {
-            console.log(data[key]);
             orderList.push(data[key]);
         }
-        console.log(orderList);
         populatePreviousOrders(orderList);
     });
 });
 
 var findByAttr = function (array, attr, value) {
     for (var i = 0; i < array.length; i++) {
+        console.log(array[i]);
         if (array[i][attr] === value) {
             return i;
         }
     }
     return -1;
-}
-
+};
 
 var checkEmail = function (email) {
     re = /[^\s@]+@[^\s@]+\.[^\s@]+/;
     return re.test(email);
-}
+};
 
 $form = $('form');
 
 $form[0].addEventListener('submit', function(event) {
-    console.log("submit order");
     event.preventDefault();
     var order = {
         coffee: $('#coffeeOrder')[0].value,
@@ -91,11 +84,8 @@ $form[0].addEventListener('submit', function(event) {
         flavor: $('#flavorShot')[0].value,
         strength: $('#strengthLevel')[0].value
     };
-
     orderList.push(order);
-    console.log(order);
     makeOrderListItem(order);
-    console.log(JSON.stringify(order));
     $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
       console.log(resp)
     });
@@ -111,7 +101,6 @@ orders = [
     {"strength":10,"flavor":"caramel","size":"tall","emailAddress":"uni@gallop.org","coffee":"love"},
 ]
 
-
 var $popBtn = $('#popBtn');
 $popBtn[0].addEventListener('click', function(event) {
     event.preventDefault();
@@ -123,8 +112,6 @@ $popBtn[0].addEventListener('click', function(event) {
             flavor: orders[i]['flavor'],
             strength: orders[i]['strength']
         };
-
-        console.log(order);
         $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
             console.log(resp)
         });
