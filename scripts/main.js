@@ -30,9 +30,12 @@ var makeOrderListItem = function (order) {
                         console.log("deleting");
                         $($listElement).remove();
                         }, 2000);
-        $.ajax({url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders/" 
+        var ajaxDelete = $.ajax({url: "https://dc-coffeerun.herokuapp.com/api/coffeeorders/" 
                       + order.emailAddress, type: 'DELETE',
         });
+        ajaxDelete.then(function(resp) {
+            console.log(resp);
+        });   
     });
     
     //var orginalEvent = $listElement.data('events');
@@ -48,7 +51,8 @@ var populatePreviousOrders = function (orderList) {
 
 $(document).ready(function() {
     // AJAX on page load, grab orders from server
-    $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders", function (data) { 
+    var getResponse = $.get("https://dc-coffeerun.herokuapp.com/api/coffeeorders");
+    getResponse.then(function (data) {
         console.log("Data fetched from server");
         orderList = []; 
         for (key in data) {
@@ -86,7 +90,8 @@ $form[0].addEventListener('submit', function(event) {
     };
     orderList.push(order);
     makeOrderListItem(order);
-    $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
+    var ajaxPost = $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order);
+    ajaxPost.then(function (resp) {
       console.log(resp)
     });
     $form[0].reset();
@@ -112,7 +117,8 @@ $popBtn[0].addEventListener('click', function(event) {
             flavor: orders[i]['flavor'],
             strength: orders[i]['strength']
         };
-        $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order, function(resp) {
+        var populatePost = $.post("https://dc-coffeerun.herokuapp.com/api/coffeeorders", order);
+        populatePost.then(function(resp) {
             console.log(resp)
         });
     }
